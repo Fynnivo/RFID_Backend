@@ -2,7 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class ScheduleController {
-  // CREATE schedule
   async createSchedule(req, res) {
     try {
       const { className, subject, instructor, room, startTime, endTime, dayOfWeek, isActive } = req.body;
@@ -15,7 +14,6 @@ class ScheduleController {
     }
   }
 
-  // READ all schedules
   async getSchedules(req, res) {
     const schedules = await prisma.schedule.findMany({
       orderBy: { startTime: 'asc' }
@@ -23,7 +21,6 @@ class ScheduleController {
     res.json({ success: true, schedules });
   }
 
-  // READ schedule by id
   async getScheduleById(req, res) {
     const schedule = await prisma.schedule.findUnique({
       where: { id: req.params.id }
@@ -32,7 +29,6 @@ class ScheduleController {
     res.json({ success: true, schedule });
   }
 
-  // UPDATE schedule
   async updateSchedule(req, res) {
     try {
       const { id } = req.params;
@@ -49,7 +45,6 @@ class ScheduleController {
     }
   }
 
-  // DELETE schedule
   async deleteSchedule(req, res) {
     try {
       await prisma.schedule.delete({ where: { id: req.params.id } });

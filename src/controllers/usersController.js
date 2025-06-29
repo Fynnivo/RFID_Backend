@@ -3,7 +3,6 @@ const prisma = new PrismaClient();
 const Helpers = require('../utils/helpers');
 
 class UsersController {
-  // CREATE user
   async createUser(req, res) {
     try {
       const { username, fullName, email, rfidCard, password, role, isActive } = req.body;
@@ -22,7 +21,6 @@ class UsersController {
     }
   }
 
-  // READ all users
   async getUsers(req, res) {
     const users = await prisma.user.findMany({
       select: { id: true, username: true, fullName: true, email: true, rfidCard: true, role: true, isActive: true, createdAt: true, updatedAt: true }
@@ -30,7 +28,6 @@ class UsersController {
     res.json({ success: true, users });
   }
 
-  // READ user by id
   async getUserById(req, res) {
     const user = await prisma.user.findUnique({
       where: { id: req.params.id },
@@ -40,7 +37,6 @@ class UsersController {
     res.json({ success: true, user });
   }
 
-  // UPDATE user
   async updateUser(req, res) {
     try {
       const { id } = req.params;
@@ -59,7 +55,6 @@ class UsersController {
     }
   }
 
-  // DELETE user
   async deleteUser(req, res) {
     try {
       await prisma.user.delete({ where: { id: req.params.id } });

@@ -2,19 +2,16 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class AuditLogController {
-  // Catat log (bisa dipanggil dari service lain)
   static async log({ userId, action, description, ip, scheduleId, status }) {
     try {
       await prisma.auditLog.create({
         data: { userId, action, description, ip, scheduleId, status }
       });
     } catch (err) {
-      // Optional: log error ke file jika gagal
       console.error('Failed to write audit log:', err.message);
     }
   }
 
-  // Endpoint: list log untuk admin
   async getLogs(req, res) {
     try {
       const logs = await prisma.auditLog.findMany({

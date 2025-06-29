@@ -2,7 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class NotificationController {
-  // Kirim notifikasi ke semua user dengan role tertentu
   async sendToRole(req, res) {
     try {
       const { title, message, type, priority, role } = req.body;
@@ -31,7 +30,6 @@ class NotificationController {
     }
   }
 
-  // Kirim notifikasi ke user tertentu (by userId)
   async sendToUser(req, res) {
     try {
       const { userId, title, message, type, priority } = req.body;
@@ -47,7 +45,6 @@ class NotificationController {
     }
   }
 
-  // List notifikasi untuk user yang sedang login
   async getMyNotifications(req, res) {
     const userId = req.user.id;
     const notifications = await prisma.notification.findMany({
@@ -57,7 +54,6 @@ class NotificationController {
     res.json({ success: true, notifications });
   }
 
-  // Tandai notifikasi sudah dibaca
   async markAsRead(req, res) {
     const { id } = req.params;
     const notification = await prisma.notification.update({
