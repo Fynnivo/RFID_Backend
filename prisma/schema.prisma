@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  fullName    String
+  email       String   @unique
+  rfidCard    String   @unique
+  password    String
+  role        Role     @default(MEMBER)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  attendances   Attendance[]
+  scheduleUsers ScheduleUser[]
+  notifications Notification[]
+  
+  @@map("users")
+}
+
+model Schedule {
+  id          String   @id @default(cuid())
+  className   String
+  subject     String
+  instructor  String
+  room        String
+  startTime   DateTime
+  endTime     DateTime
+  dayOfWeek   Int      // 0=Sunday, 1=Monday, etc
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  attendances Attendance[]
+  scheduleUsers ScheduleUser[]
+  
+  @@map("schedules")
+}
+
+model ScheduleUser {
+  id         String   @id @default(cuid())
+  userId     String
+  scheduleId String
+  createdAt  DateTime @default(now())
+  
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, scheduleId])
+  @@map("schedule_users")
+}
+
+model Attendance {
+  id         String           @id @default(cuid())
+  userId     String
+  scheduleId String
+  scanTime   DateTime         @default(now())
+  status     AttendanceStatus @default(PRESENT)
+  isLate     Boolean          @default(false)
+  notes      String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  
+  @@map("attendances")
+}
+
+model Settings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String @default("string") // string, number, boolean, json
+  description String?
+  category    String @default("general")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("settings")
+}
+
+model Notification {
+  id        String            @id @default(cuid())
+  userId    String?           // null for system-wide notifications
+  title     String
+  message   String
+  type      NotificationType  @default(INFO)
+  priority  NotificationPriority @default(NORMAL)
+  isRead    Boolean           @default(false)
+  data      Json?             // additional data (attendance info, etc)
+  expiresAt DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+}
+
+enum NotificationType {
+  SUCCESS
+  INFO
+  WARNING
+  ERROR
+  ATTENDANCE
+  SYSTEM
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String
+  description String
+  ip          String?
+  scheduleId  String?   // <--- tambahkan ini
+  status      String?   // <--- tambahkan ini
+  createdAt   DateTime @default(now())
+  
+  @@map("audit_logs")
+}
+
+enum Role {
+  MAIN_TEAM
+  MEMBER
+  CADET
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  ABSENT
+  EXCUSED
+}
