@@ -4,7 +4,7 @@ const attendanceController = require('../controllers/attendanceController');
 const { auth } = require('../middleware/auth');
 
 // Scan absensi (bisa diakses user)
-router.post('/scan', auth, attendanceController.scanAttendance);
+router.post('/scan', attendanceController.scanAttendance);
 
 // List riwayat absensi per user
 router.get('/user/:userId', auth, attendanceController.getUserAttendance);

@@ -18,7 +18,19 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const user = await authService.login({ email, password });
-      const token = Helpers.generateToken({ id: user.id, role: user.role });
+      const token = Helpers.generateToken({
+      id: user.id,
+      role: user.role,
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        username: user.username,
+        rfidCard: user.rfidCard,
+        isActive: user.isActive,
+      }
+    });
       if (tokenBlacklist.has(token)) {
         throw new Error('Token is blacklisted, please login again');
       }

@@ -5,7 +5,7 @@ const { auth } = require('../middleware/auth')
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);
-router.post('/logout', auth, authController.logout);
+router.post('/logout', authController.logout);
 router.get('/me', auth, (req, res) => {
   res.json({ success: true, user: req.user });
 });
