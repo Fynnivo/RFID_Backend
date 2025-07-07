@@ -663,3 +663,15 @@
 {"level":"info","message":"\u001b[0mGET /api/dashboard/attendance-chart \u001b[36m304\u001b[0m 5546.789 ms - -\u001b[0m","timestamp":"2025-07-03T04:57:13.792Z"}
 {"level":"info","message":"\u001b[0mPOST /api/auth/logout \u001b[32m200\u001b[0m 3.936 ms - 46\u001b[0m","timestamp":"2025-07-03T05:00:47.829Z"}
 {"level":"info","message":"\u001b[0mPOST /api/auth/logout \u001b[32m200\u001b[0m 137.921 ms - 46\u001b[0m","timestamp":"2025-07-03T05:00:48.224Z"}
+{"level":"info","message":"Server running on 5000","timestamp":"2025-07-03T06:24:34.379Z"}
+{"level":"info","message":"\u001b[0mPOST /api/auth/login \u001b[32m200\u001b[0m 6542.608 ms - 673\u001b[0m","timestamp":"2025-07-03T06:27:17.557Z"}
+{"level":"info","message":"\u001b[0mGET /api/audit-logs \u001b[32m200\u001b[0m 3028.171 ms - 527\u001b[0m","timestamp":"2025-07-03T06:27:31.598Z"}
+{"level":"info","message":"\u001b[0mGET /api/dashboard/attendance-chart \u001b[31m500\u001b[0m 5891.789 ms - 552\u001b[0m","timestamp":"2025-07-03T06:27:33.993Z"}
+{"level":"info","message":"\u001b[0mGET /api/users \u001b[36m304\u001b[0m 6296.823 ms - -\u001b[0m","timestamp":"2025-07-03T06:27:34.102Z"}
+{"level":"info","message":"\u001b[0mGET /api/schedules \u001b[36m304\u001b[0m 7791.220 ms - -\u001b[0m","timestamp":"2025-07-03T06:27:36.289Z"}
+{"level":"info","message":"\u001b[0mGET /api/audit-logs \u001b[36m304\u001b[0m 4396.828 ms - -\u001b[0m","timestamp":"2025-07-03T06:27:36.523Z"}
+{"level":"info","message":"\u001b[0mGET /api/users \u001b[36m304\u001b[0m 2236.622 ms - -\u001b[0m","timestamp":"2025-07-03T06:27:37.721Z"}
+{"level":"info","message":"\u001b[0mGET /api/schedules \u001b[36m304\u001b[0m 1071.365 ms - -\u001b[0m","timestamp":"2025-07-03T06:27:38.132Z"}
+{"level":"info","message":"\u001b[0mPOST /api/auth/logout \u001b[32m200\u001b[0m 7.454 ms - 46\u001b[0m","timestamp":"2025-07-03T06:27:46.428Z"}
+{"level":"info","message":"\u001b[0mPOST /api/auth/logout \u001b[32m200\u001b[0m 11.890 ms - 46\u001b[0m","timestamp":"2025-07-03T06:27:47.412Z"}
+{"level":"info","message":"\u001b[0mGET /api/dashboard/attendance-chart \u001b[32m200\u001b[0m 11435.977 ms - -\u001b[0m","timestamp":"2025-07-03T06:27:47.886Z"}

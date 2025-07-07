@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 async function sendToUser({ userId, title, message, type = 'INFO', priority = 'LOW' }) {
   return prisma.notification.create({
