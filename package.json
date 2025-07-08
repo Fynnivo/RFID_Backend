@@ -31,17 +31,18 @@
     "multer": "^2.0.1",
     "mysql2": "^3.14.1",
     "nodemailer": "^7.0.3",
+    "serverless-http": "^3.2.0",
     "socket.io": "^4.8.1",
     "winston": "^3.17.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "^24.0.3",
+    "@vercel/node": "^2.0.0",
     "jest": "^30.0.2",
     "nodemon": "^3.1.10",
     "prisma": "^6.10.1",
-    "supertest": "^7.1.1",
-    "@vercel/node": "^2.0.0"
+    "supertest": "^7.1.1"
   },
   "engines": {
     "node": ">=18.0.0"

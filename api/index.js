@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const serverless = require('serverless-http');
 
 // Import routes
 const authRoutes = require('../src/routes/auth');
@@ -65,7 +66,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Root route
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
   res.json({ 
     message: 'Attendance API is running',
     version: '1.0.0'
@@ -83,4 +84,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
-module.exports = app;
+
+module.exports.handler = serverless(app);
