@@ -2,9 +2,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// prisma/schema.prisma
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
@@ -34,9 +37,9 @@ model Schedule {
   subject        String
   instructor     String
   room           String
-  startTime      DateTime
-  endTime        DateTime
-  dayOfWeek      Int           // 0=Sunday, 1=Monday, etc
+  scheduleDate   DateTime      // NEW: The actual date of the schedule (YYYY-MM-DD)
+  startTime      DateTime      // Time only (stored as DateTime but only time matters)
+  endTime        DateTime      // Time only (stored as DateTime but only time matters)
   isActive       Boolean       @default(true)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -44,6 +47,7 @@ model Schedule {
   attendances    Attendance[]
   scheduleUsers  ScheduleUser[]
 
+  @@index([scheduleDate]) // Index for faster date queries
   @@map("schedules")
 }
 

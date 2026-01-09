@@ -17,6 +17,6 @@ router.get('/by-schedule/:scheduleId', scheduleUserController.getUsersBySchedule
 router.get('/by-user/:userId', scheduleUserController.getSchedulesByUser);
 
 // Unassign user dari schedule
-router.delete('/:id', scheduleUserController.unassignUserFromSchedule);
+router.delete('/:userId/:scheduleId', scheduleUserController.unassignUserFromSchedule);
 
 module.exports = router;

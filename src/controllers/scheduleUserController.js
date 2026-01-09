@@ -44,11 +44,49 @@ class ScheduleUserController {
   // Unassign user dari schedule
   async unassignUserFromSchedule(req, res) {
     try {
-      const { id } = req.params; // id dari ScheduleUser
-      await prisma.scheduleUser.delete({ where: { id } });
-      res.json({ success: true, message: 'User dihapus dari schedule' });
+      const { scheduleId, userId } = req.params;
+
+      // Validate parameters
+      if (!userId || !scheduleId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Both userId and scheduleId are required'
+        });
+      }
+
+      // Find and delete the assignment
+      const assignment = await prisma.scheduleUser.findFirst({
+        where: {
+          userId,
+          scheduleId
+        }
+      });
+
+      if (!assignment) {
+        return res.status(404).json({
+          success: false,
+          message: 'User assignment not found'
+        });
+      }
+
+      await prisma.scheduleUser.delete({
+        where: {
+          id: assignment.id
+        }
+      });
+
+      res.json({ 
+        success: true, 
+        message: 'User successfully removed from schedule'
+      });
+
     } catch (err) {
-      res.status(400).json({ success: false, message: err.message });
+      console.error('Error unassigning user:', err);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to unassign user',
+        error: err.message 
+      });
     }
   }
 }

@@ -13,7 +13,16 @@ router.post('/user', auth, adminAuth, notificationController.sendToUser);
 // List notifikasi untuk user yang sedang login
 router.get('/me', auth, notificationController.getMyNotifications);
 
-// Tandai notifikasi sudah dibaca
-router.put('/:id/read', auth, notificationController.markAsRead);
+// Tandai notifikasi sudah dibaca - perbaiki parameter route
+router.put('/:id/read', auth, (req, res, next) => {
+  // Validasi bahwa id adalah string yang valid
+  if (!req.params.id || typeof req.params.id !== 'string') {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Invalid notification ID' 
+    });
+  }
+  next();
+}, notificationController.markAsRead);
 
 module.exports = router;
