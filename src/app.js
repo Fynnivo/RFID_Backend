@@ -19,7 +19,7 @@ const app = express();
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: ['http://localhost:5173'],
+  origin: ['https://rfid-project-3keb.vercel.app'],
   credentials: true
 }));
 app.use(compression());
