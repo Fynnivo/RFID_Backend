@@ -19,10 +19,10 @@ const app = express();
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: true,
+  origin: "https://rfid-project-hg4y.vercel.app",
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(compression());
 app.use(express.json());
