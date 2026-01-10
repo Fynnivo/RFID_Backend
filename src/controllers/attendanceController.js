@@ -27,20 +27,20 @@ class AttendanceController {
         });
       }
 
-      // 2. Find active schedule for user from scheduleUser
+      // 2. Find active schedule for user from scheduleUser for TODAY
       const today = new Date();
       const todayStart = new Date(today.setHours(0, 0, 0, 0));
       const todayEnd = new Date(today.setHours(23, 59, 59, 999));
-
-      // Get today's day of week (0=Sunday, 1=Monday, etc)
-      const dayOfWeek = today.getDay();
 
       const userScheduleAssignments = await prisma.scheduleUser.findMany({
         where: {
           userId: user.id,
           schedule: {
             isActive: true,
-            dayOfWeek: dayOfWeek
+            scheduleDate: {
+              gte: todayStart,
+              lte: todayEnd
+            }
           }
         },
         include: {
@@ -78,34 +78,48 @@ class AttendanceController {
       // 4. Check if late
       const now = new Date();
       const scheduleStartTime = new Date(userScheduleAssignments[0].schedule.startTime);
-      const isLate = now > scheduleStartTime;
-      const status = isLate ? "LATE" : "PRESENT";
+      
+      // Extract time from schedule (HH:MM) and combine with today's date
+      const scheduleTimeMatch = userScheduleAssignments[0].schedule.startTime.match(/T(\d{2}):(\d{2})/);
+      if (scheduleTimeMatch) {
+        const [_, hours, minutes] = scheduleTimeMatch;
+        const todayScheduleTime = new Date();
+        todayScheduleTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        
+        const isLate = now > todayScheduleTime;
+        const status = isLate ? "LATE" : "PRESENT";
 
-      // 5. CREATE attendance record
-      const attendance = await prisma.attendance.create({
-        data: {
-          userId: user.id,
-          scheduleId: userScheduleAssignments[0].scheduleId,
-          scanTime: now,
-          status: status,
-          isLate: isLate
-        },
-        include: {
-          user: {
-            select: { id: true, username: true, email: true }
+        // 5. CREATE attendance record
+        const attendance = await prisma.attendance.create({
+          data: {
+            userId: user.id,
+            scheduleId: userScheduleAssignments[0].scheduleId,
+            scanTime: now,
+            status: status,
+            isLate: isLate
           },
-          schedule: {
-            select: { id: true, className: true, subject: true, instructor: true }
+          include: {
+            user: {
+              select: { id: true, username: true, email: true }
+            },
+            schedule: {
+              select: { id: true, className: true, subject: true, instructor: true }
+            }
           }
-        }
-      });
+        });
 
-      return res.status(201).json({
-        success: true,
-        message: `Attendance recorded successfully with status ${status}`,
-        data: attendance,
-        status
-      });
+        return res.status(201).json({
+          success: true,
+          message: `Attendance recorded successfully with status ${status}`,
+          data: attendance,
+          status
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: "Invalid schedule time format"
+        });
+      }
 
     } catch (error) {
       console.error("Attendance scan error:", error);
@@ -209,19 +223,28 @@ class AttendanceController {
           className: true,
           subject: true,
           instructor: true,
+          room: true,
+          scheduleDate: true,
           startTime: true,
           endTime: true,
-          isActive: true,
-          dayOfWeek: true
+          isActive: true
         }
       });
+
+      if (!schedule) {
+        return res.status(404).json({
+          success: false,
+          message: "Schedule not found"
+        });
+      }
 
       res.json({
         success: true,
         data: {
           schedule,
           attendance: attendanceData,
-          stats
+          stats,
+          selectedDate: date || new Date().toISOString().split('T')[0]
         }
       });
 
@@ -360,6 +383,7 @@ class AttendanceController {
               className: true,
               subject: true,
               instructor: true,
+              scheduleDate: true,
               startTime: true,
               endTime: true
             }
@@ -542,8 +566,10 @@ class AttendanceController {
 
       // Check if attendance already exists for this user/schedule/date
       const attendanceDate = scanTime ? new Date(scanTime) : new Date();
-      const startOfDay = new Date(attendanceDate.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(attendanceDate.setHours(23, 59, 59, 999));
+      const startOfDay = new Date(attendanceDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(attendanceDate);
+      endOfDay.setHours(23, 59, 59, 999);
 
       const existingAttendance = await prisma.attendance.findFirst({
         where: {
@@ -651,7 +677,12 @@ class AttendanceController {
       // Validasi apakah schedule ada
       const schedule = await prisma.schedule.findUnique({
         where: { id: scheduleId },
-        select: { id: true, className: true, subject: true }
+        select: { 
+          id: true, 
+          className: true, 
+          subject: true,
+          scheduleDate: true
+        }
       });
 
       if (!schedule) {
@@ -661,11 +692,11 @@ class AttendanceController {
         });
       }
 
-      // Ambil absensi terakhir untuk setiap user dalam schedule
+      // Ambil 5 absensi terakhir untuk schedule ini
       const lastAttendances = await prisma.attendance.findMany({
         where: { scheduleId },
         orderBy: { scanTime: 'desc' },
-        distinct: ['userId'], // Ambil hanya absensi terakhir per user
+        take: 5,
         include: {
           user: {
             select: { id: true, username: true, email: true }
@@ -673,10 +704,14 @@ class AttendanceController {
         }
       });
 
+      // Jika tidak ada data, return empty array (bukan error)
       if (lastAttendances.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "No attendance records found for this schedule"
+        return res.json({
+          success: true,
+          data: {
+            schedule,
+            lastAttendances: []
+          }
         });
       }
 
