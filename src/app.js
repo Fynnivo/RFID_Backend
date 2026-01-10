@@ -19,7 +19,9 @@ const app = express();
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: ['*'],
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true
 }));
 app.use(compression());
